@@ -1,0 +1,87 @@
+[
+  {
+    "frage": "Wo macht sich dein Körper momentan besonders bemerkbar?",
+    "antworten": [
+      "Nacken, Schultern oder oberer Rücken",
+      "Magen, Bauch oder Verdauung",
+      "Unterleib, Becken oder weiblicher Zyklus",
+      "Brustkorb, Herzraum oder Atmung",
+      "Hals, Kiefer oder Stimme",
+      "Kopf, Augen oder häufige Kopfschmerzen",
+      "Erschöpfung, innere Unruhe oder Beschwerden in mehreren Körperbereichen",
+      "Ich habe momentan keine besonderen körperlichen Beschwerden."
+    ]
+  },
+  {
+    "frage": "Welche Gefühle begleiten dich in letzter Zeit besonders häufig?",
+    "antworten": [
+      "Angst, Unsicherheit oder innere Anspannung",
+      "Traurigkeit, Einsamkeit oder Enttäuschung",
+      "Wut, Ärger oder Frustration",
+      "Schuld, Scham oder Selbstzweifel",
+      "Überforderung oder das Gefühl, allem gerecht werden zu müssen",
+      "Innere Leere, Orientierungslosigkeit oder Sinnlosigkeit",
+      "Ich fühle mich überwiegend ausgeglichen und verbunden mit mir."
+    ]
+  },
+  {
+    "frage": "Welcher dieser inneren Sätze kommt dir besonders bekannt vor?",
+    "antworten": [
+      "„Ich brauche Sicherheit und möchte am liebsten alles unter Kontrolle behalten.“",
+      "„Ich kümmere mich um alle anderen und vergesse dabei oft mich selbst.“",
+      "„Ich bin nicht gut genug und sollte eigentlich noch mehr leisten.“",
+      "„Ich wünsche mir Liebe und Nähe, habe aber Angst, verletzt zu werden.“",
+      "„Ich behalte meine Gedanken und Gefühle lieber für mich.“",
+      "„Ich denke über alles nach und zweifle häufig an meinen Entscheidungen.“",
+      "„Ich spüre, dass sich etwas verändern möchte, weiß aber noch nicht genau, wohin mein Weg führt.“"
+    ]
+  },
+  {
+    "frage": "Wie reagierst du meistens, wenn das Leben dich herausfordert?",
+    "antworten": [
+      "Ich versuche, alles zu kontrollieren und abzusichern.",
+      "Ich ziehe mich zurück und mache vieles mit mir selbst aus.",
+      "Ich funktioniere weiter, auch wenn meine Kraft längst nachgelassen hat.",
+      "Ich versuche, es allen recht zu machen, damit niemand enttäuscht ist.",
+      "Ich schlucke meine Gefühle herunter und vermeide Konflikte.",
+      "Ich grüble viel und suche nach der perfekten Lösung.",
+      "Ich verliere vorübergehend meine Orientierung und zweifle an meinem Weg."
+    ]
+  },
+  {
+    "frage": "In welchem Bereich deines Lebens wünschst du dir gerade am meisten Veränderung?",
+    "antworten": [
+      "Sicherheit, Vertrauen und innere Ruhe",
+      "Körpergefühl, Weiblichkeit und eigene Bedürfnisse",
+      "Selbstwert, Grenzen und Selbstbestimmung",
+      "Liebe, Partnerschaft und Beziehungen",
+      "Ausdruck, Kommunikation und die eigene Wahrheit",
+      "Entscheidungen, Intuition und innere Klarheit",
+      "Lebenssinn, persönliche Entwicklung und neue Wege"
+    ]
+  },
+  {
+    "frage": "Wonach sehnst du dich tief in deinem Inneren?",
+    "antworten": [
+      "Mich sicher, getragen und willkommen im Leben zu fühlen.",
+      "Mich in meinem Körper wieder zu Hause zu fühlen und meine Lebendigkeit zu genießen.",
+      "Mich wertvoll zu fühlen, ohne ständig etwas beweisen zu müssen.",
+      "Liebe zu empfangen und mich in Beziehungen wirklich verbunden zu fühlen.",
+      "Mich frei auszudrücken und so sein zu dürfen, wie ich wirklich bin.",
+      "Meiner Wahrnehmung und meiner inneren Weisheit zu vertrauen.",
+      "Meinen eigenen Lebensweg mit Freude, Sinn und Erfüllung zu gestalten."
+    ]
+  },
+  {
+    "frage": "Wenn du heute etwas für dich verändern könntest, was wäre das?",
+    "antworten": [
+      "Ich möchte weniger kontrollieren und dem Leben wieder mehr vertrauen.",
+      "Ich möchte meinen Körper besser spüren und meine Bedürfnisse ernst nehmen.",
+      "Ich möchte mich von alten Erwartungen und Leistungsdruck befreien.",
+      "Ich möchte lieben und Nähe genießen, ohne mich selbst dabei zu verlieren.",
+      "Ich möchte den Mut finden, meine Wahrheit auszusprechen und für mich einzustehen.",
+      "Ich möchte meinen Gedanken weniger Macht geben und meiner Intuition mehr vertrauen.",
+      "Ich möchte erkennen, was mich wirklich erfüllt, und meinen eigenen Weg gehen."
+    ]
+  }
+]

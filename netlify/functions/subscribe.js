@@ -1,15 +1,31 @@
 // Netlify Function: nimmt E-Mail + Ergebnis vom Körperschlüssel entgegen
 // und legt den Kontakt sicher (Server-Seite, API-Key nie im Frontend sichtbar) bei GetResponse an.
 
-const TOR_NAMEN = {
-  1: "Tor 1 – Sicherheit & Ankommen",
-  2: "Tor 2 – Körpergefühl & Zugehörigkeit",
-  3: "Tor 3 – Ich-Kraft & Selbstwert",
-  4: "Tor 4 – Liebe & Bindung",
-  5: "Tor 5 – Ausdruck & Wahrheit",
-  6: "Tor 6 – Klarheit & Erkenntnis",
-  7: "Tor 7 – Sinn & Verkörperung",
-};
+
+const TORE = require("../../tore.json");
+const GR = "https://api.getresponse.com/v3";
+const FELDER = { koerperschluessel_tor: "Tor-Name", koerperschluessel_link: "Link" };
+
+function schoen(t) {
+  return t.toLowerCase().replace(/(^|[\s&,-]+)(\p{L})/gu, (m, a, b) => a + b.toUpperCase());
+}
+
+async function feldIds(headers) {
+  const ids = {};
+  const r = await fetch(`${GR}/custom-fields?perPage=100`, { headers });
+  const liste = r.ok ? await r.json() : [];
+  for (const f of liste) if (FELDER[f.name]) ids[f.name] = f.customFieldId;
+  for (const name of Object.keys(FELDER)) {
+    if (ids[name]) continue;
+    const c = await fetch(`${GR}/custom-fields`, {
+      method: "POST", headers,
+      body: JSON.stringify({ name, type: "text", valueType: "string", hidden: "false", values: [] }),
+    });
+    if (c.ok) ids[name] = (await c.json()).customFieldId;
+    else console.error("Feld konnte nicht angelegt werden:", name, c.status, await c.text());
+  }
+  return ids;
+}
 
 exports.handler = async function (event) {
   if (event.httpMethod !== "POST") {
@@ -25,6 +41,10 @@ exports.handler = async function (event) {
 
   const { email, name, tor, runde, age } = payload;
 
+  if (!name || typeof name !== "string" || !name.trim() || name.length > 80) {
+    return { statusCode: 400, body: JSON.stringify({ error: "Name fehlt" }) };
+  }
+
   if (!email || typeof email !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return { statusCode: 400, body: JSON.stringify({ error: "Ungültige E-Mail-Adresse" }) };
   }
@@ -37,12 +57,30 @@ exports.handler = async function (event) {
     return { statusCode: 500, body: JSON.stringify({ error: "Server nicht konfiguriert" }) };
   }
 
-  const torLabel = TOR_NAMEN[tor] || "unbekannt";
+  
+  const headers = { "Content-Type": "application/json", "X-Auth-Token": `api-key ${apiKey}` };
+  const torNr = Number.isInteger(tor) && tor >= 1 && tor <= 14 ? tor : null;
+  const customFieldValues = [];
+  if (torNr) {
+    try {
+      const ids = await feldIds(headers);
+      const eintrag = TORE.find((t) => t.number === torNr);
+      const base = (process.env.URL || "").replace(/\/$/, "");
+      const werte = {
+        koerperschluessel_tor: `Tor ${torNr} · ${schoen(eintrag ? eintrag.title : "")}`,
+        koerperschluessel_link: `${base}/tor-${String(torNr).padStart(2, "0")}.html`,
+      };
+      for (const [n, v] of Object.entries(werte)) if (ids[n]) customFieldValues.push({ customFieldId: ids[n], value: [v] });
+    } catch (e) {
+      console.error("Felder nicht verfügbar, Kontakt wird trotzdem angelegt:", e);
+    }
+  }
 
   const body = {
+    ...(customFieldValues.length ? { customFieldValues } : {}),
     email: email,
     campaign: { campaignId: campaignId },
-    ...(name ? { name: name } : {}),
+    name: name.trim(),
     // Optional: Falls du in GetResponse Custom Fields "koerperschluessel_tor" und "koerperschluessel_alter"
     // angelegt hast, kannst du sie hier per customFieldId eintragen. Ohne Custom Fields wird das einfach
     // weggelassen, der Kontakt wird trotzdem angelegt.
@@ -51,10 +89,7 @@ exports.handler = async function (event) {
   try {
     const response = await fetch("https://api.getresponse.com/v3/contacts", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Auth-Token": `api-key ${apiKey}`,
-      },
+      headers,
       body: JSON.stringify(body),
     });
 
