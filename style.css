@@ -7,3 +7,5 @@
 
 @font-face{font-family:"Dancing Script";font-style:normal;font-weight:600;font-display:swap;src:url(assets/fonts/dancing-script-latin-600-normal.woff2) format("woff2")}
 .signatur{font:600 34px/1.25 "Dancing Script",cursive;color:#a86b1b;margin:6px 0 20px}@media(max-width:650px){.signatur{font-size:30px}}
+
+@media(max-width:650px){.quiz-hero{display:flex;flex-direction:column}.quiz-hero>div{order:1}.quiz-hero>img{order:2;max-width:200px;margin-top:12px}}
