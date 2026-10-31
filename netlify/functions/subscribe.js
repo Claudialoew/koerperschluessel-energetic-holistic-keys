@@ -4,7 +4,7 @@
 
 const TORE = require("../../tore.json");
 const GR = "https://api.getresponse.com/v3";
-const FELDER = { koerperschluessel_tor: "Tor-Name", koerperschluessel_link: "Link" };
+const FELDER = { koerperschluessel_tor: "Tor-Name", koerperschluessel_link: "Link", koerperschluessel_pdf: "PDF" };
 
 function schoen(t) {
   return t.toLowerCase().replace(/(^|[\s&,-]+)(\p{L})/gu, (m, a, b) => a + b.toUpperCase());
@@ -69,6 +69,7 @@ exports.handler = async function (event) {
       const werte = {
         koerperschluessel_tor: `Tor ${torNr} · ${schoen(eintrag ? eintrag.title : "")}`,
         koerperschluessel_link: `${base}/tor-${String(torNr).padStart(2, "0")}.html`,
+        koerperschluessel_pdf: `${base}/downloads/tor-${String(torNr).padStart(2, "0")}.pdf`,
       };
       for (const [n, v] of Object.entries(werte)) if (ids[n]) customFieldValues.push({ customFieldId: ids[n], value: [v] });
     } catch (e) {
