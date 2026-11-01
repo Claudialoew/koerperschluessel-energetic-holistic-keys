@@ -82,6 +82,8 @@ exports.handler = async function (event) {
     email: email,
     campaign: { campaignId: campaignId },
     name: name.trim(),
+    // Autoresponder-Tag 0: ohne diesen Wert starten die Autoresponder bei API-Kontakten nicht.
+    dayOfCycle: 0,
     // Optional: Falls du in GetResponse Custom Fields "koerperschluessel_tor" und "koerperschluessel_alter"
     // angelegt hast, kannst du sie hier per customFieldId eintragen. Ohne Custom Fields wird das einfach
     // weggelassen, der Kontakt wird trotzdem angelegt.
