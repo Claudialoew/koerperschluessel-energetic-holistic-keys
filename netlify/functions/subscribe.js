@@ -3,8 +3,38 @@
 
 
 const TORE = require("../../tore.json");
+const ZUSATZ = require("../../zusatz.json");
 const GR = "https://api.getresponse.com/v3";
 const FELDER = { koerperschluessel_tor: "Tor-Name", koerperschluessel_link: "Link", koerperschluessel_pdf: "PDF" };
+// GetResponse-Textfelder fassen höchstens 255 Zeichen. Der Zusatztext wird deshalb satzweise auf
+// mehrere Felder verteilt (za = Körper mit Einleitung, zb = Gefühle, zc = Stärke) und in der Mail
+// mit [[custom_koerperschluessel_zusatz_a1]] [[..._a2]] ... hintereinander eingefügt.
+const ZUSATZ_GRUPPEN = { a: 3, b: 2, c: 2 };
+for (const [g, n] of Object.entries(ZUSATZ_GRUPPEN)) for (let i = 1; i <= n; i++) FELDER[`koerperschluessel_zusatz_${g}${i}`] = `Zusatz ${g}${i}`;
+
+function teile(text, max = 255) {
+  const saetze = text.split(/(?<=[.:!?])\s+/);
+  const teile = [];
+  let cur = "";
+  for (let satz of saetze) {
+    while (satz.length > max) {
+      const cut = satz.lastIndexOf(" ", max);
+      if (cur) { teile.push(cur); cur = ""; }
+      teile.push(satz.slice(0, cut));
+      satz = satz.slice(cut + 1);
+    }
+    if ((cur + " " + satz).trim().length <= max) cur = (cur + " " + satz).trim();
+    else { teile.push(cur); cur = satz; }
+  }
+  if (cur) teile.push(cur);
+  return teile;
+}
+
+function zusatzAbsaetze(kz, gz, sz) {
+  const ok = (i, liste) => Number.isInteger(i) && i >= 0 && i < liste.length;
+  if (!ok(kz, ZUSATZ.koerper) || !ok(gz, ZUSATZ.gefuehl) || !ok(sz, ZUSATZ.staerke)) return null;
+  return [`${ZUSATZ.intro} ${ZUSATZ.koerper[kz]}`, ZUSATZ.gefuehl[gz], ZUSATZ.staerke[sz]];
+}
 
 function schoen(t) {
   return t.toLowerCase().replace(/(^|[\s&,-]+)(\p{L})/gu, (m, a, b) => a + b.toUpperCase());
@@ -39,7 +69,7 @@ exports.handler = async function (event) {
     return { statusCode: 400, body: "Ungültige Anfrage" };
   }
 
-  const { email, name, tor, runde, age } = payload;
+  const { email, name, tor, runde, age, kz, gz, sz } = payload;
 
   if (!name || typeof name !== "string" || !name.trim() || name.length > 80) {
     return { statusCode: 400, body: JSON.stringify({ error: "Name fehlt" }) };
@@ -77,6 +107,23 @@ exports.handler = async function (event) {
     }
   }
 
+  const absaetze = zusatzAbsaetze(kz, gz, sz);
+  if (absaetze) {
+    try {
+      const ids = await feldIds(headers);
+      ["a", "b", "c"].forEach((g, gi) => {
+        const stuecke = teile(absaetze[gi]).slice(0, ZUSATZ_GRUPPEN[g]);
+        stuecke.forEach((t, i) => {
+          const id = ids[`koerperschluessel_zusatz_${g}${i + 1}`];
+          if (id) customFieldValues.push({ customFieldId: id, value: [t] });
+        });
+      });
+    } catch (e) {
+      console.error("Zusatzfelder nicht verfügbar, Kontakt wird trotzdem angelegt:", e);
+    }
+  }
+  const zusatzAntwort = absaetze ? { intro: ZUSATZ.intro, absaetze: [absaetze[0].slice(ZUSATZ.intro.length + 1), absaetze[1], absaetze[2]] } : null;
+
   const body = {
     ...(customFieldValues.length ? { customFieldValues } : {}),
     email: email,
@@ -98,7 +145,7 @@ exports.handler = async function (event) {
 
     // GetResponse gibt bei Erfolg 202 Accepted zurück, kein JSON-Body.
     if (response.status === 202 || response.status === 201) {
-      return { statusCode: 200, body: JSON.stringify({ success: true }) };
+      return { statusCode: 200, body: JSON.stringify({ success: true, zusatz: zusatzAntwort }) };
     }
 
     // Kontakt existiert eventuell schon (Code 1008) - das ist kein echter Fehler für uns.
@@ -106,7 +153,7 @@ exports.handler = async function (event) {
     console.error("GetResponse-Antwort:", response.status, errorText);
 
     if (response.status === 400 && errorText.includes('"code":1008')) {
-      return { statusCode: 200, body: JSON.stringify({ success: true, note: "Kontakt existierte bereits" }) };
+      return { statusCode: 200, body: JSON.stringify({ success: true, note: "Kontakt existierte bereits", zusatz: zusatzAntwort }) };
     }
 
     return { statusCode: 502, body: JSON.stringify({ error: "GetResponse-Fehler", detail: errorText }) };

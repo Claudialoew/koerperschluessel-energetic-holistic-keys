@@ -11,3 +11,5 @@
 @media(max-width:650px){.quiz-hero{display:flex;flex-direction:column}.quiz-hero>div{order:1}.quiz-hero>img{order:2;max-width:200px;margin-top:12px}}
 
 .flow-text{font-size:19px;line-height:1.85}.flow-text p{font-size:19px}.flow-text p.gruss{font-size:22px;color:#a86b1b}@media(max-width:650px){.flow-text,.flow-text p{font-size:18px}.flow-text p.gruss{font-size:21px}}
+
+.quiz-zusatz{margin-top:22px;padding-top:18px;border-top:1px solid #e9d9c5}.quiz-zusatz p{line-height:1.75;margin:0 0 12px}
