@@ -112,7 +112,9 @@ exports.handler = async function (event) {
     try {
       const ids = await feldIds(headers);
       ["a", "b", "c"].forEach((g, gi) => {
-        const stuecke = teile(absaetze[gi]).slice(0, ZUSATZ_GRUPPEN[g]);
+        // In der Mail steht die Überschrift "Dein persönlicher Zusatz" im Kästchen, deshalb ohne Einleitungssatz.
+          const text = gi === 0 ? absaetze[0].slice(ZUSATZ.intro.length + 1) : absaetze[gi];
+          const stuecke = teile(text).slice(0, ZUSATZ_GRUPPEN[g]);
         stuecke.forEach((t, i) => {
           const id = ids[`koerperschluessel_zusatz_${g}${i + 1}`];
           if (id) customFieldValues.push({ customFieldId: id, value: [t] });
